@@ -67,7 +67,7 @@ Nmap to avoid the firewall
     dirsearch 
     DirBuster
     Patator- password guessing attacks
-
+# Brute force with Patatpr
     git clone https://github.com/lanjelot/patator.git /usr/share/patator
     $ patator smtp_login host=192.168.17.129 user=Ololena password=FILE0 0=/usr/share/john/password.lst
     $ patator smtp_login host=192.168.17.129 user=FILE1 password=FILE0 0=/usr/share/john/password.lst 1=/usr/share/john/usernames.lst
@@ -75,7 +75,6 @@ Nmap to avoid the firewall
     $ patator smtp_login host=192.168.17.129 user=Ololena password=FILE0 0=/usr/share/john/password.lst -x ignore:fgrep=’incorrect            password or account name’
 
 # Use Fierce to brute DNS
-
 # Note: Fierce checks whether the DNS server allows zone transfers. If allowed, a zone transfer is made and the user is notified. If not, the host name can be enumerated by querying the DNS server.
 
     # http://ha.ckers.org/fierce/
@@ -97,7 +96,6 @@ Nmap to avoid the firewall
     ./httprint -h http://IP -s signatures.txt
 
 # Scan with Skipfish
-
 # Note: Skipfish is a Web application security detection tool, Skipfish will use recursive crawler and dictionary-based probe to generate an interactive site map, the resulting map will be generated after the security check output.
 
     skipfish -m 5 -LY -S /usr/share/skipfish/dictionaries/complete.wl -o ./skipfish2 -u http://IP
@@ -108,7 +106,6 @@ Nmap to avoid the firewall
     for i in {101..102}; do nc -vv -n -w 1 192.168.56.$i 21-25 -z; done
 
 # Unicornscan
-
 # NOTE: Unicornscan is a tool for information gathering and security audits.
 
     us -H -msf -Iv 192.168.56.101 -p 1-65535
