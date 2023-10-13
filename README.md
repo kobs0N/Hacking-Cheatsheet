@@ -1,67 +1,116 @@
-# Hacking Cheatsheet
-    List of commands and techniques to while conducting any kind of hacking :)
+ # Hacking Cheatsheet
 
-    # "The quieter you become, The more you’re able to hear"
+> "The quieter you become, The more you’re able to hear"
 
-<img src="https://cdn.pixabay.com/photo/2013/07/13/11/43/tux-158547_960_720.png"/>
+List of commands and techniques to while conducting any kind of hacking :)
 
-# Apply the best nmap scanning strategy for all size networks
+# Red Team and OPSEC
+## Systeminfo Cheatsheet
 
-# Host discovery, generate a list of surviving hosts
+## Basic System Info
+- `systeminfo`: Show detailed configuration about the computer and OS.
+- `hostname`: Display the host name of the current machine.
 
-    $ nmap -sn -T4 -oG Discovery.gnmap 192.168.1.1/24
-    $ grep “Status: Up” Discovery.gnmap | cut -f 2 -d ‘ ‘ > LiveHosts.txt
+## Hotfix Information
+- `wmic qfe get Caption,Description,HotFixID,InstalledOn`: List patches and hotfixes installed on the system.
 
-    #http://nmap.org/presentations/BHDC08/bhdc08-slides-fyodor.pdf
+## User & Group Information
+- `net users`: List all user accounts.
+- `net localgroups`: List all local groups.
+- `net user hacker`: Show information about the user named "hacker".
+- `net group /domain`: List all domain groups.
 
-    $ nmap -sS -T4 -Pn -oG TopTCP -iL LiveHosts.txt
-    $ nmap -sU -T4 -Pn -oN TopUDP -iL LiveHosts.txt
+## Network Details
+- `ipconfig /all`: Show detailed IP configuration.
+- `route print`: Display routing table.
+- `arp -A`: Show ARP cache.
 
-# Port found, found all the ports, but UDP port scanning will be very slow
+## Privilege Information
+- `whoami /priv`: Display user privileges.
 
-    $ nmap -sS -T4 -Pn –top-ports 3674 -oG 3674 -iL LiveHosts.txt
-    $ nmap -sS -T4 -Pn -p 0-65535 -oN FullTCP -iL LiveHosts.txt
-    $ nmap -sU -T4 -Pn -p 0-65535 -oN FullUDP -iL LiveHosts.txt
+## Data Search
+- `findstr /spin "password" *.*`: Recursively search for the term "password" in files.
 
-# Displays the TCP / UDP port
-    $ grep “open” FullTCP|cut -f 1 -d ‘ ‘ | sort -nu | cut -f 1 -d ‘/’ |xargs | sed ‘s/ /,/g’|awk ‘{print “T:”$0}’
-    $ grep “open” FullUDP|cut -f 1 -d ‘ ‘ | sort -nu | cut -f 1 -d ‘/’ |xargs | sed ‘s/ /,/g’|awk ‘{print “U:”$0}’
+## Process & Service Details
+- `tasklist /SVC`: List running processes with service details.
+- `sc query state= all | findstr "SERVICE_NAME:" >> a & FOR /F "tokens=2 delims= " %i in (a) DO @echo %i >> b & FOR /F %i in (b) DO @(@echo %i & @echo --------- & @sc qc %i | findstr "BINARY_PATH_NAME" & @echo.) & del a 2>nul & del b 2>nul`: Identify unquoted service paths which can be exploited for privilege escalation.
 
-# Detect the service version
+## Network Connections
+- `netstat -ano`: List network connections, ports, and associated process IDs.
 
-    $ nmap -sV -T4 -Pn -oG ServiceDetect -iL LiveHosts.txt
-    $ nmap -O -T4 -Pn -oG OSDetect -iL LiveHosts.txt
-    $ nmap -O -sV -T4 -Pn -p U:53,111,137,T:21-25,80,139,8080 -oG OS_Service_Detect -iL LiveHosts.txt
+## Directory Access
+- `dir /a-r-d /s /b`: Search for writeable directories.
 
-Nmap to avoid the firewall
+## Domain & Forest Info (PowerShell)
+- `[System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain()`: Get current domain details.
+- `([System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain()).GetAllTrustRelationships()`: List trust relationships of current domain.
+- `[System.DirectoryServices.ActiveDirectory.Forest]::GetCurrentForest()`: Get current forest details.
+- `([System.DirectoryServices.ActiveDirectory.Forest]::GetForest((New-Object System.DirectoryServices.ActiveDirectory.DirectoryContext('Forest', 'forest-of-interest.local')))).GetAllTrustRelationships()`: List trust relationships of a specific forest.
 
-# Segmentation
-    $ nmap -f
-# Modify the default MTU size, but it must be a multiple of 8 (8, 16, 24, 32, etc.)
-    $ nmap –mtu 24
-# Generate random numbers of spoofing
-    $ nmap -D RND:10 [target]
-# Manually specify the IP to be spoofed
-    $ nmap -D decoy1,decoy2,decoy3 etc.
-# Botnet scanning, first need to find the botnet IP
-    $ nmap -sI [Zombie IP] [Target IP]
-# Designated source terminal
-    $ nmap –source-port 80 IP
-# Add a random number of data after each scan
-    $ nmap –data-length 25 IP
-# MAC address spoofing, you can generate different host MAC address
-    $ nmap –spoof-mac Dell/Apple/3Com IP
+## Domain Controller and Trusts
+- `nltest /dclist:offense.local`: List all Domain Controllers in the specified domain.
+- `net group "domain controllers" /domain`: Display domain controllers in the domain.
+- `nltest /dsgetdc:offense.local`: Get Domain Controller details for a domain.
+- `nltest /domain_trusts`: List all domain trusts.
+- `nltest /user:"spotless"`: Fetch details for a specific user.
 
-# Nmap for Web vulnerability scanning
+## Authentication & Session Details
+- `set l`: Display local environment variables.
+- `klist`: Display Kerberos tickets.
+- `klist sessions`: Display all logon sessions, including NTLM.
+- `klist tgt`: Display cached Kerberos TGT (Ticket Granting Ticket).
 
-    cd /usr/share/nmap/scripts/
-    wget http://www.computec.ch/projekte/vulscan/download/nmap_nse_vulscan-2.0.tar.gz && tar xzf nmap_nse_vulscan-2.0.tar.gz
-    nmap -sS -sV –script=vulscan/vulscan.nse target
-    nmap -sS -sV –script=vulscan/vulscan.nse –script-args vulscandb=scipvuldb.csv target
-    nmap -sS -sV –script=vulscan/vulscan.nse –script-args vulscandb=scipvuldb.csv -p80 target
-    nmap -PN -sS -sV –script=vulscan –script-args vulscancorrelation=1 -p80 target
-    nmap -sV –script=vuln target
-    nmap -PN -sS -sV –script=all –script-args vulscancorrelation=1 target
+## Miscellaneous
+- `whoami`: Display logged-in user details (useful on older systems).
+
+## Host Discovery
+Discover alive hosts in a network.
+- `$ nmap -sn -T4 -oG Discovery.gnmap 192.168.1.1/24`: Ping scan, no port scan.
+- `$ grep “Status: Up” Discovery.gnmap | cut -f 2 -d ‘ ‘ > LiveHosts.txt`: Extract live hosts from the results.
+
+## Top Ports Scan
+Identify most commonly used ports.
+- `$ nmap -sS -T4 -Pn -oG TopTCP -iL LiveHosts.txt`: TCP SYN scan.
+- `$ nmap -sU -T4 -Pn -oN TopUDP -iL LiveHosts.txt`: UDP scan.
+
+## Full Range Port Scan
+Full range port scanning; UDP might be slow.
+- `$ nmap -sS -T4 -Pn --top-ports 3674 -oG 3674 -iL LiveHosts.txt`: Common 3674 TCP ports.
+- `$ nmap -sS -T4 -Pn -p 0-65535 -oN FullTCP -iL LiveHosts.txt`: All TCP ports.
+- `$ nmap -sU -T4 -Pn -p 0-65535 -oN FullUDP -iL LiveHosts.txt`: All UDP ports.
+
+## Extract Open Ports
+Commands to extract and display open TCP and UDP ports.
+- `$ grep “open” FullTCP | cut -f 1 -d ‘ ‘ | sort -nu | cut -f 1 -d ‘/’ | xargs | sed ‘s/ /,/g’ | awk ‘{print “T:”$0}’`
+- `$ grep “open” FullUDP | cut -f 1 -d ‘ ‘ | sort -nu | cut -f 1 -d ‘/’ | xargs | sed ‘s/ /,/g’ | awk ‘{print “U:”$0}’`
+
+## Service and OS Detection
+Identify services running and OS details.
+- `$ nmap -sV -T4 -Pn -oG ServiceDetect -iL LiveHosts.txt`: Service detection.
+- `$ nmap -O -T4 -Pn -oG OSDetect -iL LiveHosts.txt`: OS detection.
+- `$ nmap -O -sV -T4 -Pn -p U:53,111,137,T:21-25,80,139,8080 -oG OS_Service_Detect -iL LiveHosts.txt`: Combined OS and service detection for specific ports.
+
+## Evasion Techniques
+Methods to avoid firewalls or obfuscate scan origin.
+
+### Segmentation
+- `$ nmap -f`: Segmented packet scan.
+
+### MTU Manipulation
+- `$ nmap --mtu 24`: Change MTU size. It should be a multiple of 8.
+
+### Decoy Scanning
+Make it appear the scan is coming from other hosts.
+- `$ nmap -D RND:10 [target]`: Randomized decoy scan.
+- `$ nmap -D decoy1,decoy2,decoy3 [target]`: Manually specify decoys.
+
+### Zombie Host Scanning
+Use idle hosts to mask scan origin.
+- `$ nmap -sI [Zombie IP] [Target IP]`: Idle scan using a specific zombie.
+
+### Specified Source Port
+- `$ nmap --source-port 80 [target]`: Scan with a specified source port (80 in this case).
+
 
 # Web path scanner
     dirsearch 
