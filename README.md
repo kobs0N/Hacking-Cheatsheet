@@ -2,8 +2,6 @@
 
 > "The quieter you become, The more you’re able to hear"
 
-List of commands and techniques to while conducting any kind of hacking :)
-
 # Red Team and OPSEC
 ## Systeminfo Cheatsheet
 
