@@ -1,6 +1,6 @@
 ## Hacking Cheatsheet
 
-> "The quieter you become, The more you’re able to hear"
+> The quieter you become, The more you’re able to hear
 
 ## Red Team and OPSEC
 
