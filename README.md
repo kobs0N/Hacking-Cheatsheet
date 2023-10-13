@@ -1,8 +1,7 @@
-## Hacking Cheatsheet
+# Red Team and OPSEC
 
-> The quieter you become, The more you’re able to hear
+> The quieter you become, the more you are able to hear 🥷
 
-## Red Team and OPSEC
 
 ## Basic System Info
 - `systeminfo`: Show detailed configuration about the computer and OS.
