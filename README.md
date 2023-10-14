@@ -228,8 +228,6 @@ $ patator smtp_login host=192.168.17.129 user=Ololena password=FILE0 0=/usr/shar
   skipfish -m 5 -LY -S /usr/share/skipfish/dictionaries/complete.wl -o ./skipfish2 -u http://IP
   ```
 
-# Comprehensive Penetration Testing Commands and Tools
-
 ## Network Scanning and Enumeration:
 
 ### NC (Netcat) Scan:
