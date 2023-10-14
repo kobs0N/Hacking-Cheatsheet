@@ -1,7 +1,6 @@
-# Red Team and OPSEC
+# Red Team and OPSEC - 2023 Edition
 
 > The quieter you become, the more you are able to hear 🥷
-
 
 ## Basic System Info
 - `systeminfo`: Show detailed configuration about the computer and OS.
