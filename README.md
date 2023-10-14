@@ -109,8 +109,6 @@ Use idle hosts to mask scan origin.
 
 
 ## AnyDesk OPSEC Usage
-
-*Introduction:*
 This outlines the usage of AnyDesk, a commercial remote access tool utilized by threat actors for browsing victim host file systems, deploying payloads, and data exfiltration.
 
 **Downloading and Installing AnyDesk:**
